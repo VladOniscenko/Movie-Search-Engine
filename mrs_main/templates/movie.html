@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{movie.title}}</title>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="shortcut icon" type="image/jpg" href="https://image.tmdb.org/t/p/w500{{movie.poster_path}}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<style>
+    .my_cont_movie {
+        height: 100vh;
+    }
+
+    .my_img {
+        position: relative;
+        -webkit-box-shadow: inset 0px -200px 100px -5px rgba(255, 255, 255, 1);
+        -moz-box-shadow: inset 0px -200px 100px -5px rgba(255, 255, 255, 1);
+        box-shadow: inset 0px -200px 100px -5px rgba(255, 255, 255, 1);
+        transition: 3s;
+    }
+
+    .my_img img {
+        opacity: 30%;
+        position: relative;
+        z-index: -1;
+        transition: 3s;
+
+    }
+
+    .my_container {
+        display: flex;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .movie_card2 {
+        display: grid;
+        grid-template-columns: max-content max(500px);
+        gap: 30px;
+        margin: auto;
+
+    }
+
+    .movie_card2 img {
+        width: 15rem;
+        border-radius: 10px;
+    }
+
+    .btn-back {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 999;
+    }
+
+    @media (max-width: 850px) {
+        .my_img img {
+            opacity: 100%;
+            transition: 3s;
+        }
+
+        .hide-on-mobile {
+            display: none;
+        }
+
+        .movie_card2 {
+            width: 90vw;
+            display: block;
+            grid-template-columns: none;
+            margin: auto;
+        }
+
+        .my_container {
+            display: unset;
+            position: unset;
+            top: unset;
+            left: unset;
+            transform: unset;
+        }
+
+        .my_img {
+            -webkit-box-shadow: inset 0px -50px 30px -5px rgba(255, 255, 255, 1);
+            -moz-box-shadow: inset 0px -50px 30px -5px rgba(255, 255, 255, 1);
+            box-shadow: inset 0px -50px 30px -5px rgba(255, 255, 255, 1);
+            transition: 3s;
+        }
+
+        .my_cont_movie {
+            height: unset;
+        }
+
+    }
+
+    .curr_movie {
+        overflow: hidden;
+    }
+
+    .card {
+        background-color: #fff;
+        border: none;
+    }
+
+    .input-box i {
+        position: absolute;
+        right: 13px;
+        top: 15px;
+        color: #ced4da;
+
+    }
+
+    .list {
+
+        padding-top: 20px;
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+
+    }
+
+    .border-bottom {
+
+        border-bottom: 2px solid #eee;
+    }
+
+    .list i {
+        font-size: 19px;
+        color: red;
+    }
+
+    .list small {
+
+        color: #dedddd;
+    }
+
+    * {
+        font-family: 'Poppins', sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    img {
+        -webkit-user-drag: none;
+    }
+
+    img {
+        pointer-events: none;
+    }
+
+    .movie_info i {
+        font-size: 20px;
+    }
+
+    .credits p {
+        padding-top: 15px;
+        padding-left: 18px;
+    }
+
+    .credits .card-body i {
+        color: #8e24aa;
+    }
+
+    .movie_card_button {
+        display: flex;
+        padding: 0;
+        gap: 10px;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+
+    .movie_card:hover {
+        gap: 10px;
+        transform: scale(1.05);
+        -webkit-box-shadow: inset 0px 0px 50px 30px rgba(255, 255, 255, 1);
+        -moz-box-shadow: inset 0px 0px 50px 30px rgba(255, 255, 255, 1);
+        box-shadow: inset 0px 0px 50px 30px rgba(255, 255, 255, 1);
+    }
+
+    .my_recommends {
+        position: relative;
+        z-index: 9999;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        transition: scroll-behavior 0.5s ease-in-out;
+    }
+
+
+    /*BUTTON*/
+    .movies_container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 15%;
+    }
+
+    .movie_button {
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        width: 15rem;
+    }
+
+    .movie_img {
+        border-radius: 10px;
+        width: 100%;
+    }
+
+    .movie_img:hover {
+        scale: 1.05;
+    }
+</style>
+{% if search_term %}
+<form action="/" method="post">
+    {% csrf_token %}
+
+    <input type="hidden" name="my_input" value={{search_term}}>
+
+    <button type="submit" class="btn btn-back btn-outline-primary m-2">
+        <i class="fa-solid fa-backward"></i>
+        Go back
+    </button>
+</form>
+{% else %}
+<a href="/" class="btn btn-back btn-outline-primary m-2">
+    <i class="fa-solid fa-backward"></i>
+    Search
+</a>
+{% endif %}
+<div class="curr_movie">
+
+    <div class="my_cont_movie w-100">
+
+        <div class="my_img">
+            <img class="w-100" src="https://image.tmdb.org/t/p/original{{movie.backdrop_path}}" alt=""/>
+        </div>
+
+        <div class="my_container w-100 justify-content-center align-items-center">
+            <div class="movie_card2">
+                <img src=https://image.tmdb.org/t/p/w500{{movie.poster_path}} class="card-img-top hide-on-mobile"
+                     alt="img">
+                <div>
+
+                    <div>
+                        <h2><b>{{movie.title}}</b></h2>
+                        <span>{{movie.overview}}</span>
+                        <div><b>Release date: </b>{{movie.release_date}}</div>
+                        <div><b>Votes: </b>&#11088 {{movie.vote_average}} / 10</div>
+                        <div class="my-3 font-weight-bold">Production companies</div>
+                        <span>{{movie.production_companies}}</span>
+                    </div>
+                    <div class="d-flex " style="gap: 10px">
+                        <div>
+                            <a href="https://www.themoviedb.org/movie/{{movie.id}}" target="_blank">
+                                <div class="btn btn-outline-primary my-2">
+                                    Watch on TMDB
+                                </div>
+                            </a>
+
+                        </div>
+                        {% if recommendations %}
+                        <div>
+                            <a href="#my_recommends">
+                                <div class="btn btn-outline-primary my-2">
+                                    Recommendations
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                            <div class="btn btn-danger my-2">
+                                No recommendations
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if recommendations %}
+
+    <div class="container mt-5 my_recommends" id="my_recommends">
+        <h1 class="text-center"><b>Recommendations</b></h1>
+        <div class="movies_container">
+
+
+            {% for recommendation in recommendations %}
+            <form action="/movie" method="post" class="movie_form movie_card">
+                <button type="submit" class="movie_button">
+                    <img class="movie_img" src=https://image.tmdb.org/t/p/w500{{recommendation.poster_path}} alt="img"
+                         loading="lazy">
+                </button>
+                {% if search_term %}
+                    <input type="hidden" name="my_input" value={{search_term}}>
+                {% endif %}
+                <input type="hidden" name="movie_recommend" value="{{recommendation.title}}">
+                <input type="hidden" name="movieId" value="{{ recommendation.id }}"/>
+                {% csrf_token %}
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+
+</div>
+</body>
+</html>

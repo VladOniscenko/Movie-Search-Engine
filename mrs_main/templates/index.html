@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie recommendation system</title>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<style>
+    * {
+        font-family: 'Poppins', sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .searchbar {
+        margin-bottom: auto;
+        margin-top: auto;
+        height: 60px;
+        border-radius: 30px;
+        padding: 10px;
+    }
+
+    .search_input {
+        color: #000000;
+        border: 0;
+        outline: 0;
+        background: none;
+        width: 0;
+        caret-color: transparent;
+        line-height: 40px;
+        transition: width 0.4s linear;
+    }
+
+    .searchbar:hover > .search_input {
+        padding: 0 10px;
+        width: 240px;
+        caret-color: black;
+        transition: width 0.4s linear;
+    }
+
+    .searchbar:hover {
+        border: solid 1px black;
+    }
+
+    .searchbar:hover > .search_icon {
+        border: 0.1px solid black;
+        background: black;
+        color: white;
+    }
+
+    .search_icon {
+        height: 40px;
+        width: 40px;
+        float: right;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        color: white;
+        text-decoration: none;
+        background-color: black;
+    }
+
+    /*BUTTON*/
+    .movies_container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 15%;
+    }
+
+    .movie_button {
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        width: 15rem;
+    }
+
+    .movie_img {
+        border-radius: 10px;
+        width: 100%;
+    }
+
+    .movie_img:hover {
+        scale: 1.05;
+    }
+
+    .change-icon {
+        text-decoration: none;
+    }
+
+    .change-icon > .fa + .fa,
+    .change-icon:hover > .fa {
+        transition: ease-out 2s;
+        display: none;
+    }
+
+    .change-icon:hover > .fa + .fa {
+        transition: ease-out 2s;
+        display: inherit;
+    }
+</style>
+<div class="search_container m-2">
+    <div class="h-100">
+        <div class="d-flex justify-content-end">
+            <form action="/" method="post" class="searchbar">
+                {% csrf_token %}
+                <input class="search_input" type="text" name="my_input" placeholder="Search...">
+                <button type="submit" class="btn search_icon"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if not results and search_term %}
+<div class="list border-bottom">
+
+    <div class="d-flex flex-column ml-3">
+        <h2 class="text-center mb-3 text-uppercase">
+            <b>Movies not found</b>: {{ search_term }}
+            <a href="/">
+                <i class="fa-sharp fa-solid fa-trash"></i>
+            </a>
+        </h2>
+    </div>
+</div>
+{% endif %}
+
+{% if not results and not search_term %}
+<p class="text-center mb-3">Time to find some adventure!</p>
+
+{% if random_movies %}
+<h2 class="text-center mb-3 text-uppercase">
+    <b>Random movies</b>
+    <a href="/" class="change-icon">
+        <i class="fa fa-solid fa-rotate-left"></i>
+        <i class="fa fa-rotate-right"></i>
+    </a>
+</h2>
+<div class="container movies_container">
+
+    {% for result in random_movies %}
+    <form action="/movie" method="post" class="movie_form">
+        <button type="submit" class="movie_button">
+            <img class="movie_img" src=https://image.tmdb.org/t/p/w500{{result.poster_path}} alt="img" loading="lazy">
+        </button>
+        <input type="hidden" name="movie_recommend" value="{{result.title}}">
+        <input type="hidden" name="movieId" value="{{ result.id }}"/>
+        {% csrf_token %}
+    </form>
+    {% endfor %}
+</div>
+{% endif %}
+{% endif %}
+
+{% if results %}
+<h2 class="text-center mb-3 text-uppercase">
+    <b>Movies found</b>
+    <a href="/">
+        <i class="fa-sharp fa-solid fa-trash"></i>
+    </a>
+</h2>
+<div class="container movies_container">
+
+    {% for result in results %}
+    <form action="/movie" method="post" class="movie_form">
+        <button type="submit" class="movie_button">
+            <img class="movie_img" src=https://image.tmdb.org/t/p/w500{{result.poster_path}} alt="img" loading="lazy">
+        </button>
+        <input type="hidden" name="my_input" value={{search_term}}>
+        <input type="hidden" name="movie_recommend" value="{{result.title}}">
+        <input type="hidden" name="movieId" value="{{ result.id }}"/>
+        {% csrf_token %}
+    </form>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+</div>
+</body>
+</html>
