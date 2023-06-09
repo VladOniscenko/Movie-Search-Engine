@@ -1,0 +1,1 @@
+web: gunicorn mrs_app.wsgi --log-file -
